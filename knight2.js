@@ -17,19 +17,16 @@ const knightValidMoves = [
   [-1, 2],
 ];
 
-const trySomeCombos = getMoveCombos(6, knightValidMoves);
-// console.dir(trySomeMoves, { depth: null });
-
 function convertComboToPath(start, moveCombo, path = []) {
   if (!isValidPosition(start)) return null;
   path.push(start);
   if (!moveCombo.length) return path;
-  const [moveX, moveY] = moveCombo.shift();
-  const nextPosition = [start[0] + moveX, start[1] + moveY];
-  return convertComboToPath(nextPosition, moveCombo, path);
+  const move = moveCombo.shift();
+  const nextPos = getNextPos(start, move);
+  return convertComboToPath(nextPos, moveCombo, path);
 }
 
-function tryCombos(start, end, combos) {
+function findPath(start, end, combos) {
   for (let combo of combos) {
     const path = convertComboToPath(start, combo);
     if (path && isSamePosition(path.at(-1), end)) {
@@ -54,15 +51,9 @@ function knightMoves(start, end, count = 1) {
 
   if (!isValidPosition(start) || !isValidPosition(end)) return null;
   const allCountMoves = getMoveCombos(count, validMoves);
-  const possiblePath = tryCombos(start, end, allCountMoves);
+  const possiblePath = findPath(start, end, allCountMoves);
   return possiblePath || knightMoves(start, end, (count += 1));
 }
-
-// const solution = tryCombos([0, 9], [7, 7], trySomeCombos);
-// console.log(solution);
-
-const s1 = knightMoves([3, 7], [0, 0]);
-console.log(s1);
 
 // Utilities
 function isValidPosition(position) {
@@ -73,3 +64,63 @@ function isValidPosition(position) {
 function isSamePosition(pos1, pos2) {
   return pos1[0] === pos2[0] && pos1[1] === pos2[1];
 }
+
+function getNextPos(pos, move) {
+  const [posX, posY] = pos;
+  const [moveX, moveY] = move;
+  return [posX + moveX, posY + moveY];
+}
+
+// Tests
+// const trySomeCombos = getMoveCombos(3, knightValidMoves);
+// console.dir(trySomeCombos, { depth: null });
+
+// const solution = tryCombos([0, 5], [7, 7], trySomeCombos);
+// console.log(solution);
+
+const shortestPath = knightMoves([0, 0], [7, 7]);
+
+const all = [];
+for (let i = 0; i < 8; i++) {
+  for (let j = 0; j < 8; j++) {
+    for (let k = 0; k < 8; k++) {
+      for (let l = 0; l < 8; l++) {
+        const shortestPath = knightMoves([i, j], [k, l]);
+        console.clear();
+        createBoard(shortestPath);
+        // all.push(shortestPath);
+      }
+    }
+  }
+}
+
+function createBoard(path) {
+  const isEmpty = (cell) => {
+    return path.every((move) => !isSamePosition(move, cell));
+  };
+
+  for (let i = 7; i >= 0; i--) {
+    let row = ` ${i} |`;
+    let rowDiv = "   +";
+    let rowNum = "    ";
+
+    for (let j = 0; j < 8; j++) {
+      row += isEmpty([j, i]) ? "   |" : " # |";
+      rowDiv += " - +";
+      rowNum += ` ${j}  `;
+    }
+
+    if (i === 7) console.log(rowDiv);
+    console.log(row);
+    console.log(rowDiv);
+    if (i === 0) console.log(rowNum);
+  }
+}
+
+function printMessage(path) {
+  console.log(`You made it in ${path.length - 1} moves! Here's your path:`);
+  path.forEach((move) => console.log(move));
+}
+
+// printMessage(shortestPath);
+// createBoard(shortestPath);
