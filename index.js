@@ -24,8 +24,10 @@ function testCases() {
   console.clear();
   cases.forEach(([start, end]) => {
     const path = knightMoves(start, end);
+    console.log();
     printMessage(path);
     drawBoard(path);
+    console.log();
   });
 }
 

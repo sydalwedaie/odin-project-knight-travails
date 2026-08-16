@@ -37,6 +37,8 @@ export function drawBoard(path) {
 }
 
 export function printMessage(path) {
-  console.log(`You made it in ${path.length - 1} moves! Here's your path:`);
-  path.forEach((move) => console.log(move));
+  console.log(
+    ` You made it from [${path[0]}] to [${path.at(-1)}] in ${path.length - 1} moves! Here's your path:`,
+  );
+  path.forEach((move) => console.log(" ", move));
 }
