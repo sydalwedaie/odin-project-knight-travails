@@ -78,23 +78,7 @@ function getNextPos(pos, move) {
 // const solution = tryCombos([0, 5], [7, 7], trySomeCombos);
 // console.log(solution);
 
-const shortestPath = knightMoves([0, 0], [7, 7]);
-
-const all = [];
-for (let i = 0; i < 8; i++) {
-  for (let j = 0; j < 8; j++) {
-    for (let k = 0; k < 8; k++) {
-      for (let l = 0; l < 8; l++) {
-        const shortestPath = knightMoves([i, j], [k, l]);
-        console.clear();
-        createBoard(shortestPath);
-        // all.push(shortestPath);
-      }
-    }
-  }
-}
-
-function createBoard(path) {
+function drawBoard(path) {
   const isEmpty = (cell) => {
     return path.every((move) => !isSamePosition(move, cell));
   };
@@ -122,5 +106,51 @@ function printMessage(path) {
   path.forEach((move) => console.log(move));
 }
 
-// printMessage(shortestPath);
-// createBoard(shortestPath);
+function testCases() {
+  cases = [
+    [
+      [0, 0],
+      [3, 3],
+    ],
+    [
+      [3, 3],
+      [0, 0],
+    ],
+    [
+      [0, 0],
+      [7, 7],
+    ],
+    [
+      [3, 3],
+      [4, 3],
+    ],
+  ];
+
+  console.clear();
+  cases.forEach(([start, end]) => {
+    const path = knightMoves(start, end);
+    printMessage(path);
+    drawBoard(path);
+  });
+}
+
+function testAllCases() {
+  const all = [];
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      for (let k = 0; k < 8; k++) {
+        for (let l = 0; l < 8; l++) {
+          const shortestPath = knightMoves([i, j], [k, l]);
+          console.clear();
+          drawBoard(shortestPath);
+          all.push(shortestPath);
+        }
+      }
+    }
+  }
+
+  console.log("Must pring 4096:", all.length);
+}
+
+testCases();
+// testAllCases();
