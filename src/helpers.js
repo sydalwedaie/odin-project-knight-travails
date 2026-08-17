@@ -14,6 +14,10 @@ export function getNextPos(pos, move) {
 }
 
 export function drawBoard(path) {
+  if (!path) {
+    console.log("Invalid start and/or finish positions.");
+    return;
+  }
   const isEmpty = (cell) => {
     return path.every((move) => !isSamePosition(move, cell));
   };
@@ -37,6 +41,10 @@ export function drawBoard(path) {
 }
 
 export function printMessage(path) {
+  if (!path) {
+    console.log("Invalid start and/or finish positions.");
+    return;
+  }
   console.log(
     ` You made it from [${path[0]}] to [${path.at(-1)}] in ${path.length - 1} moves! Here's your path:`,
   );

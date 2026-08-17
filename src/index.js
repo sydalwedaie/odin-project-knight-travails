@@ -1,7 +1,7 @@
 import { knightMoves } from "./knight.js";
 import { drawBoard, printMessage } from "./helpers.js";
 
-function testCases() {
+function testRandomCases() {
   const cases = [
     [
       [0, 0],
@@ -19,11 +19,12 @@ function testCases() {
       [3, 3],
       [4, 3],
     ],
+    [[[-1, 0]], [[1, 9]]],
   ];
 
   console.clear();
-  cases.forEach(([start, end]) => {
-    const path = knightMoves(start, end);
+  cases.forEach(([start, finish]) => {
+    const path = knightMoves(start, finish);
     console.log();
     printMessage(path);
     drawBoard(path);
@@ -39,15 +40,17 @@ function testAllCases() {
         for (let l = 0; l < 8; l++) {
           const shortestPath = knightMoves([i, j], [k, l]);
           console.clear();
-          drawBoard(shortestPath);
+          // drawBoard(shortestPath);
           all.push(shortestPath);
         }
       }
     }
   }
 
-  console.log("Must pring 4096:", all.length);
+  console.log("Must print 4096:", all.length);
+  all.sort((a, b) => b.length - a.length);
+  console.log(all);
 }
 
-testCases();
+testRandomCases();
 // testAllCases();
