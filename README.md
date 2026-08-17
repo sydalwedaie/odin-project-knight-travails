@@ -29,7 +29,7 @@ Two helper functions, `printMessage` and `drawBoard`, take the output of `knight
 
 ## The algorithm, in abstract terms
 
-The Knight piece can move in 8 different ways (various combinations of the L move):
+The Knight piece can move in 8 different ways (various orientations of the L move):
 
 - 1 right, 2 up
 - 2 right, 1 up
@@ -38,11 +38,11 @@ The Knight piece can move in 8 different ways (various combinations of the L mov
 
 Following each of these moves, it can again move in 8 different ways. This process repeats until the Knight reaches the finish point, or a dead end. My first hunch was to build a depth-first tree of all possible combinations. The root node would have 8 children, each with 8 of their own, all the way to either the finish point or a dead end. I could not make that work. I could build the tree, but I couldn’t traverse it to actually build the shortest path.
 
-So I switched to a breadth-first approach. I would first try all the single moves and check if it moves the Knight to the finish point. If not, I would try all the double moves. Since each move can go 8 possible ways, double moves could go 64 ways (8 x 8). If that didn’t work, I would try the triple moves (512 ways). I would repeat the process until a match is found. Since we’re starting the trial process from the shortest possibilities (single moves), the first match is ought to be the shortest one.
+So I switched to a breadth-first approach. I would first try all the single moves and check if it leads the Knight to the finish point. If not, I would try all the double moves. Since each move can go 8 possible ways, double moves will have 64 possible combinations (8 x 8). If that didn’t work, I would try the triple moves (512 combinations). I would repeat the process until a match is found. Since we’re starting the trial process from the shortest possibilities (single moves), the first match is ought to be the shortest one.
 
 ## How I coded the algorithm
 
-The 8 possible moves are represented as an array of arrays:
+The 8 valid Knight moves are represented as an array of arrays:
 
 ```js
 const moves = [
@@ -99,7 +99,6 @@ Each sub-array is one single **move-combo**:
 It takes one single move-combo (from the previous set) and a `start` position and builds an actual path of chessboard positions. For example, starting from `[2, 1]` and following the first move-combo from the 3-moves set, we’ll get this:
 
 ```js
-const all3Moves = getMoveCombos(3, validMoves);
 const pathFromFirstCombo = convertComboToPath([2, 1], all3Moves[0]);
 console.log(pathFromFirstCombo);
 
@@ -124,11 +123,11 @@ console.log(path2); // -> null (no 3-move path between given positions)
 
 It starts by building an array of single-move combos, and tries to find a possible path within them. If one is found, it is returned as the solution. Otherwise, it recursively calls itself to try the 2-move combos, 3-move combos, etc. The recursion continues until a path is found. The recursion is controlled by passing a third argument, `count`, that is incremented by `1` in each recursive call.
 
-This function also has a guard clause to immediately reject invalid `start` and `finish` positions. The only guard against an infinite recursion is the fact that a path is eventually found. There is no combination of `start` and `finish` positions that does not eventually lead to a valid path. I tried all 4096 combinations (using 4 nested `for` loops 😉). If that were not the case, the recursion would continue until the _heap_ overflows.
+This function also has a guard clause to immediately reject invalid `start` and `finish` positions. The only guard against an infinite recursion is the fact that a path is eventually found. There is no combination of `start` and `finish` positions that does not ultimately lead to a valid path. I tried all 4096 combinations (using 4 nested `for` loops 😉). If that were not the case, the recursion would continue until the _heap_ overflows.
 
 ## Limitations and areas for improvement
 
-The main problem is about space and time complexities. There are multiple deeply nested recursions that check for all possibilities, regardless of them being valid or not. For example, the set of all move combinations is created in its entirety in each recursive call of `knightMoves`, and then, `findPath` is run on each one. It’s 8 times for the first call, 64 for the second call, 512, 4096, and so on. There are 4 combinations of `start` and `finish` that yield a 7-moves path (corners to corners). There are 2,097,152 combinations of 7-moves! This combination is created regardless of where in that combination the shortest path happens to be. This is in addition to all the lower count combinations that were created with no valid paths from the previous recursions.
+The main problem is about space and time complexities. There are multiple deeply nested recursions that check for all possibilities, regardless of them being valid or not. For example, the set of all move combinations is created in its entirety in each recursive call of `knightMoves`, and then, `findPath` is run on each one. It’s 8 times for the first call, 64 for the second call, 512, 4096, and so on. There are 4 combinations of `start` and `finish` that yield a 7-moves path (corners to corners), and there are 2,097,152 combinations of 7-moves! This combination is created regardless of where in that combination the shortest path happens to be. This is in addition to all the lower count combinations that were created with no valid paths from the previous recursions.
 
 While there may be more than one fastest path between two points, this implementation returns the first one found and ignores the rest. This is acceptable behavior as per the project’s requirements, but it can be an area of improvement. It’s actually very easy, as it only needs a small modification to `findPath`. Instead of it terminating immediately upon finding the first valid path, I modified it to keep adding them to an array:
 
